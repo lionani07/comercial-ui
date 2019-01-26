@@ -1,6 +1,8 @@
 import { Component, OnInit } from '@angular/core';
 import { OportunidadeService } from '../oportunidade.service';
 
+import {MessageService} from 'primeng/api';
+
 @Component({
   selector: 'app-panel-negociacao',
   templateUrl: './panel-negociacao.component.html',
@@ -10,7 +12,10 @@ export class PanelNegociacaoComponent implements OnInit {
   
   oportunidade = {};
   oportunidades = [];
-  constructor(private oportunidadeService: OportunidadeService) { }
+  constructor(
+    private oportunidadeService: OportunidadeService,
+    private messageService : MessageService
+    ) { }
 
   ngOnInit() {
     this.consultar();
@@ -24,8 +29,22 @@ export class PanelNegociacaoComponent implements OnInit {
   adicionar(){
     this.oportunidadeService.adicionar(this.oportunidade)
     .subscribe(()=>{
-        this.oportunidade = {};
+        this.oportunidade = {};        
         this.consultar();
+        this.messageService.add({
+          severity:'success',
+          summary:'Oportunidade adicionada con succeso'          
+        });
+    },
+    resporta=>{
+      let msg = 'Error inesperado. Intente novamente.';
+        if(resporta.error.message){
+          msg  = resporta.error.message;
+        }
+      this.messageService.add({
+        severity:'error',
+        summary: msg          
+      });
     });
   }
 
